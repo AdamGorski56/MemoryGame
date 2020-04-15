@@ -35,47 +35,62 @@ const cards = ["coffee-heart.jpg", "coffee-heart.jpg", "coffeehold.jpg", "coffee
 
  let oneVisible = false;
  let turnCounter = 0;
- let visibleCardNr;
+ let visibleCardNr;        //first card
+ let lock = false;       //to prevent from clicking more than two cards
+ let pairsLeft = 6;
 
  function revealCard(nr){
+
+    let opacityValue = $('#c'+nr).css('opacity');
+
+    if (opacityValue != 0 && lock == false){
+
+        lock = true;
 
         let obraz = "url(./images/" + cards[nr] + ")";
 
         $('#c'+nr).css('background-image', obraz);
         $('#c'+nr).addClass('cardActive');
         $('#c'+nr).removeClass('card');
+            
         
-
-        let opacityValue = $('#c'+nr).css('opacity');
-        if (opacityValue != 0){
-
-
-
-            if(oneVisible == false){
-                                        //first card
-                oneVisible = true;
-                visibleCardNr = nr;
-            }
-
-            else{
-                                        //second card
-                if(cards[visibleCardNr] == cards[nr]){
-                    setTimeout(function(){hide2cards(visibleCardNr, nr)}, 750);
+        
+                if(oneVisible == false){
+                                            //first card
+                    oneVisible = true;
+                    visibleCardNr = nr;
+                    lock = false;
                 }
-                else{
-                    setTimeout(function(){restore2cards(visibleCardNr, nr)}, 750);
-            }
 
-        turnCounter++;
-        $('.score').html('Turn counter: '+turnCounter);
-        oneVisible = false;
-        }
+                else{
+                                            //second card
+                    if(cards[visibleCardNr] == cards[nr]){
+                        
+                        setTimeout(function(){hide2cards(visibleCardNr, nr)}, 750);
+                        
+                    }
+                    else{
+                        setTimeout(function(){restore2cards(visibleCardNr, nr)}, 750);
+                    }
+
+                            turnCounter++;
+                            $('.score').html('Turn counter: '+turnCounter);
+                            oneVisible = false;
+
+                     }
     }
  }
 
  function hide2cards (card1, card2){
  $('#c'+card1).css('opacity', 0);
  $('#c'+card2).css('opacity', 0);
+ pairsLeft--;
+
+    if (pairsLeft == 0){
+        $('.board').html('<h1>Congratulations! <br> You win in: '+ turnCounter + 'turns!</h1>');
+    }
+
+    lock = false;
  }
 
  function restore2cards (card1, card2){
@@ -85,5 +100,6 @@ const cards = ["coffee-heart.jpg", "coffee-heart.jpg", "coffeehold.jpg", "coffee
     $('#c'+card2).css('background-image', 'url(./images/icon.jpg)');
     $('#c'+card2).addClass('card');
     $('#c'+card2).removeClass('cardActive');
+    lock = false;
     
  }
